@@ -9,12 +9,36 @@ int empty(struct queue_t * q) {
 
 void enqueue(struct queue_t * q, struct pcb_t * proc) {
         /* TODO: put a new process to queue [q] */
+        #ifdef MLQ_SCHED //using multiple queue (mlq_ready_queue[MAX_PRIO]) with same prio (that mean not use priority value) 
+                if(q != NULL && proc != NULL && q->size < MAX_QUEUE_SIZE)
+                        q->proc[q->size++] = proc;
+        #else //not using MLQ which mean only 1 queue using priority instead of prio
+                if(q != NULL && proc != NULL && q->size < MAX_QUEUE_SIZE){
+                        int i = 0;
+                        while(i < q->size){
+                                if(proc->priority < q->proc[i]->priority) break;
+                                ++i;
+                        }
+                        for(int j = q->size; j > i; --j){
+                                q->proc[j] = q->proc[j-1];
+                        }             
+                        q->proc[i] = proc;
+                        ++q->size;   
+                }
+        #endif
 }
 
 struct pcb_t * dequeue(struct queue_t * q) {
         /* TODO: return a pcb whose prioprity is the highest
          * in the queue [q] and remember to remove it from q
          * */
-	return NULL;
+	// return NULL;
+        if(empty(q)) return NULL;
+        struct pcb_t* ans = q->proc[0];
+        for(int i = 0; i < q->size-1; ++i){
+                q->proc[i] = q->proc[i+1];
+        }
+        q->proc[--q->size] = NULL;
+        return ans;
 }
 

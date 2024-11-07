@@ -160,7 +160,26 @@ int MEMPHY_dump(struct memphy_struct * mp)
     /*TODO dump memphy contnt mp->storage 
      *     for tracing the memory content
      */
-
+    if(!mp){ 
+      printf("This memphy_struct is NULL\n");
+      return -1;
+    }
+    if(!mp->storage){ 
+      printf("storage NULL\n");
+      return -1;
+    }
+   //1 byte = 8bit => 4 byte = 32bit
+    printf("Dumping memphy content\n");
+    int i = 0;
+    while(i < mp->maxsz){
+      printf("%04x: ", i);
+      printf("%02x", mp->storage[i]);
+      printf("%02x", mp->storage[i+1]);
+      printf("%02x", mp->storage[i+2]);
+      printf("%02x\n", mp->storage[i+3]);
+      i += 4;
+    }
+    printf("End of memory dump.\n");
     return 0;
 }
 
